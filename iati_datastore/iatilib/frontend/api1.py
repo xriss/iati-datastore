@@ -178,8 +178,8 @@ class DataStoreView(MethodView):
         return self._valid_args
 
     def get_response(self, serializer=None, mimetype="text/csv"):
-        if serializer is None:
-            serializer = self.serializer
+		
+        serializer = self.serializer or serializer 						# self.serializer has priority
 
         try:
             valid_args = self.validate_args()
@@ -189,14 +189,14 @@ class DataStoreView(MethodView):
 
         if self.streaming:
             query = query.yield_per(100)
-            body = serializer(Stream(query))
+            body = serializer(Stream(query),mimetype)
         else:
             pagination = self.paginate(
                 query,
                 valid_args.get("offset", 0),
                 valid_args.get("limit", 50),
             )
-            body = u"".join(serializer(pagination))
+            body = u"".join(serializer(pagination,mimetype))
 
         cb=None
         if mimetype=="application/json":								#only convert json output
@@ -224,10 +224,18 @@ class ActivityView(DataStoreView):
 
 
 class DataStoreCSVView(DataStoreView):
-    def get(self, format=".csv"):
-        if not request.path.endswith("csv"):
+#   def get(self, format=".csv"):
+#        if not request.path.endswith("csv"):
+#            abort(404)
+#        return self.get_response()
+   def get(self, format):
+        forms = {
+            ".json": (serialize.json, "application/json"),  # rfc4627
+            ".csv": (serialize.csv, "text/csv")  # rfc4180
+        }
+        if format not in forms:
             abort(404)
-        return self.get_response()
+        return self.get_response(*forms[format])
 
 
 class ActivityByCountryView(DataStoreCSVView):

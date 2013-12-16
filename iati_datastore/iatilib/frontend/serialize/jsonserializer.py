@@ -126,7 +126,10 @@ def json_rep(obj):
     return {}
 
 
-def json(pagination):
+def jsonraw(raw):
+    return jsonlib.dumps(raw,indent=2 if current_app.debug else 0,cls=JSONEncoder)
+
+def json(pagination,mimetype):
     return jsonlib.dumps(OrderedDict((
         ("ok", True),
         ("total-count", pagination.total),
@@ -137,7 +140,7 @@ def json(pagination):
     indent=2 if current_app.debug else 0,
     cls=JSONEncoder)
 
-def datastore_json(pagination):
+def datastore_json(pagination,mimetype):
     return jsonlib.dumps(OrderedDict((
         ("ok", True),
         ("total-count", pagination.total),

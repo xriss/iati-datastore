@@ -6,6 +6,7 @@ from StringIO import StringIO
 from operator import attrgetter
 from iatilib import codelists
 
+from .jsonserializer import jsonraw
 
 def total(column):
     def accessor(activity):
@@ -307,15 +308,31 @@ class CSVSerializer(object):
     def __init__(self, fields, adapter=identity):
         self.fields = FieldDict(fields, adapter=adapter)
 
-    def __call__(self, data):
+    def __call__(self, data,mimetype):
         """
         Return a generator of lines of csv
         """
+        
+#suprise, this CSV needs to be written as json...
+        if mimetype=="application/json":
+            yield "["
+            yield jsonraw(self.fields.keys())
+            for obj in data.items:
+                row = [accessor(obj) for accessor in self.fields.values()]
+                yield ","+jsonraw(row)
+            yield "]"
+            return
+            
+#otherwise normal CSV output          
+  
         def line(row):
+            if mimetype=="application/json":
+                return jsonraw(row)
             out = StringIO()
             writer = unicodecsv.writer(out, encoding='utf-8')
             writer.writerow(row)
             return out.getvalue().decode('utf-8')
+            
         yield line(self.fields.keys())
         for obj in data.items:
             row = [accessor(obj) for accessor in self.fields.values()]
