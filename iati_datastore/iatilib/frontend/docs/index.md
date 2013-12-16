@@ -49,6 +49,10 @@ Filtering
         <th>Description</th>
     </tr>
     <tr>
+        <td>iati-identifier</td>
+        <td><a href="http://iatistandard.org/activity-standard/iati-identifier/">IATI Identifier</a></td>
+    </tr>
+    <tr>
         <td>recipient-country</td>
         <td><a href="http://iatistandard.org/activity-standard/recipient-country/">Recipient Country</a></td>
     </tr>
@@ -68,12 +72,17 @@ Filtering
         <td>sector</td>
         <td><a href="http://iatistandard.org/activity-standard/sector/">Sector</td>
     </tr>
+    <tr>
         <td>policy-marker</td>
         <td><a href="http://iatistandard.org/activity-standard/thematic-marker/">Policy Marker</td>
     </tr>
     <tr>
         <td>participating-org</td>
         <td><a href="http://iatistandard.org/activity-standard/participating-org/">Participating Org</a></td>
+    </tr>
+    <tr>
+        <td>participating-org.role</td>
+        <td><a href="http://iatistandard.org/activity-standard/participating-org/">Participating Org Role</a></td>
     </tr>
     <tr>
         <td>related-activity</td>
@@ -87,13 +96,42 @@ Filtering
         <td>transaction_provider-org</td>
         <td><a href="http://iatistandard.org/activity-standard/transaction/provider-org">Transaction Provider Organisation</a></td>
     </tr>
+    <tr>
+        <td>transaction_provider-org.provider-activity-id</td>
+        <td><a href="http://iatistandard.org/activity-standard/transaction/provider-org">Transaction Provider Activity ID</a></td>
+    </tr>
+    <tr>
+        <td>transaction_receiver-org</td>
+        <td><a href="http://iatistandard.org/activity-standard/transaction/receiver-org">Transaction Receiver Organisation</a></td>
+    </tr>
+    <tr>
+        <td>transaction_receiver-org.receiver-activity-id</td>
+        <td><a href="http://iatistandard.org/activity-standard/transaction/receiver-org">Transaction Receiver Activity ID</a></td>
+    </tr>
 
     <tr>
-        <td>start_date</td>
+        <td>start-date__lt<br/>start-date__gt</td>
         <td><a href="http://iatistandard.org/activities-standard/activity-dates/">Start Actual</a></td>
+    </tr>
+    <tr>
+        <td>end-date__lt<br/>end-date__gt</td>
+        <td><a href="http://iatistandard.org/activities-standard/activity-dates/">End Actual</a></td>
+    </tr>
+    <tr>
+        <td>last-change__lt<br/>last-change__gt</td>
+        <td>Datetime of activity's last change in the datastore</td>
+    </tr>
+    <tr>
+        <td>last-updated-datetime__lt<br/>last-updated-datetime__gt</td>
+        <td><a href="http://iatistandard.org/activities-standard/iati-activity/">Last Updated Datetime</a></td>
+    </tr>
+    <tr>
+        <td>registry-dataset</td>
+        <td>Dataset name on the registry</td>
     </tr>
 </table>
 
+The suffixes `__lt` and `__gt` distinguish filters for less than and greater than a given value.
 
 Combining filters gives the results that fufill all the terms. So
 

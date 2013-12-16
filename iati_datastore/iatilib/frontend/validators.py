@@ -66,6 +66,7 @@ activity_api_args = v.Schema({
     'transaction_receiver-org' : v.All(v.Coerce(str)),
     'transaction_receiver-org.ref' : v.All(v.Coerce(str)),
     'transaction_receiver-org.text' : v.All(v.Coerce(str)),
+    'transaction_receiver-org.receiver-activity-id': v.All(v.Coerce(str)),
     'start-date__gt' : apidate,
     'start-date__lt' : apidate,
     'end-date__gt' : apidate,

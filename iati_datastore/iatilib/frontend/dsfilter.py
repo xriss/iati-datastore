@@ -108,12 +108,11 @@ def _filter(query, args):
             )
         )
 
-    def transaction_provider_org_activity_id(name):
+
+    def transaction_provider_org_activity_id(activity_id):
         return Activity.transactions.any(
-			Transaction.provider_org_activity_id == name
+            Transaction.provider_org_activity_id == activity_id
         )
-
-
 
     def transaction_receiver_org(organisation):
         return Activity.transactions.any(
@@ -127,6 +126,11 @@ def _filter(query, args):
             Transaction.receiver_org.has(
                 Organisation.name == organisation
             )
+        )
+
+    def transaction_receiver_org_activity_id(activity_id):
+        return Activity.transactions.any(
+            Transaction.receiver_org_activity_id == activity_id
         )
 
     def policy_marker(policy_marker):
@@ -184,6 +188,7 @@ def _filter(query, args):
             'transaction_receiver-org' : transaction_receiver_org,
             'transaction_receiver-org.ref' : transaction_receiver_org,
             'transaction_receiver-org.text' : transaction_receiver_org_name,
+            'transaction_receiver-org.receiver-activity-id' : transaction_receiver_org_activity_id,
             'start-date__gt' : partial(date_condition, gt, Activity.start_actual, Activity.start_planned),
             'start-date__lt' : partial(date_condition, lt, Activity.start_actual, Activity.start_planned),
             'end-date__gt' : partial(date_condition, gt, Activity.end_actual, Activity.end_planned),
