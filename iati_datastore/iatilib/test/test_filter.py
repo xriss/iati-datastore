@@ -477,7 +477,18 @@ class TestTransactionFilter(AppTestCase):
         self.assertIn(trans_in, transactions.all())
         self.assertNotIn(trans_not, transactions.all())
 
-
+    def test_by_provider_org_activity_id(self):
+        trans_in = fac.TransactionFactory.create(
+			provider_org_activity_id=u"AAA")
+        trans_not = fac.TransactionFactory.create(
+			provider_org_activity_id=u"ZZZ")
+        transactions = dsfilter.transactions({
+            "transaction_provider-org.provider-activity-id": u"AAA"
+        })
+        self.assertIn(trans_in, transactions.all())
+        self.assertNotIn(trans_not, transactions.all())
+        
+        
 class TestBudgetFilter(AppTestCase):
     def test_by_country_code(self):
         budget_in = fac.BudgetFactory.create(

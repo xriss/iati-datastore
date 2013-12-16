@@ -62,6 +62,7 @@ activity_api_args = v.Schema({
     'transaction_provider-org' : v.All(v.Coerce(str)),
     'transaction_provider-org.ref' : v.All(v.Coerce(str)),
     'transaction_provider-org.text' : v.All(v.Coerce(str)),
+    'transaction_provider-org.provider-activity-id': v.All(v.Coerce(str)),
     'transaction_receiver-org' : v.All(v.Coerce(str)),
     'transaction_receiver-org.ref' : v.All(v.Coerce(str)),
     'transaction_receiver-org.text' : v.All(v.Coerce(str)),

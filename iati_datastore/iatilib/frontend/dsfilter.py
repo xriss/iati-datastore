@@ -108,6 +108,13 @@ def _filter(query, args):
             )
         )
 
+    def transaction_provider_org_activity_id(name):
+        return Activity.transactions.any(
+			Transaction.provider_org_activity_id == name
+        )
+
+
+
     def transaction_receiver_org(organisation):
         return Activity.transactions.any(
             Transaction.receiver_org.has(
@@ -173,6 +180,7 @@ def _filter(query, args):
             'transaction_provider-org' : transaction_provider_org,
             'transaction_provider-org.ref' : transaction_provider_org,
             'transaction_provider-org.text' : transaction_provider_org_name,
+            'transaction_provider-org.provider-activity-id' : transaction_provider_org_activity_id,
             'transaction_receiver-org' : transaction_receiver_org,
             'transaction_receiver-org.ref' : transaction_receiver_org,
             'transaction_receiver-org.text' : transaction_receiver_org_name,
@@ -184,6 +192,7 @@ def _filter(query, args):
             'last-change__lt': partial(lt, Activity.last_change_datetime),
             'last-updated-datetime__gt': partial(gt, Activity.last_updated_datetime),
             'last-updated-datetime__lt': partial(lt, Activity.last_updated_datetime),
+            'registry-dataset': registry_dataset,
             'registry-dataset': registry_dataset,
     }
 
