@@ -31,7 +31,8 @@ sector = partial(codelist_validator, codelists.Sector)
 policy_marker = partial(codelist_validator, codelists.PolicyMarker)
 
 activity_api_args = v.Schema({
-	"callback": v.Match(r'^[A-Z0-9a-z]+$'),								#also use as JSONP flag
+	"jsonp": v.Match(r'^[A-Z0-9a-z_]+$'),								#also use as JSONP flag
+	"callback": v.Match(r'^[A-Z0-9a-z_]+$'),							#also use as JSONP flag
     "limit": v.All(v.Coerce(int), v.Range(max=250000)),
     "offset": v.All(v.Coerce(int), v.Range(min=0)),
     "date": apidate,

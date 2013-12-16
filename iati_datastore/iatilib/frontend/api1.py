@@ -198,8 +198,8 @@ class DataStoreView(MethodView):
             )
             body = u"".join(serializer(pagination))
 
-        cb=self.validate_args().get("callback")
-        if cb:										#use of callback forces jsonp style return
+        cb=valid_args.get("callback") or valid_args.get("jsonp")	#callback or jsonp
+        if cb:														#use of callback/jsonp value forces a jsonp style return
 			mimetype="application/javascript"
 			body=cb+"("+body+");\n"
 
