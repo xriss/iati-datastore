@@ -17,6 +17,7 @@ from . import dsfilter, validators, serialize
 api = Blueprint('api', __name__)
 Scrollination = namedtuple('Scrollination', 'query offset limit total items')
 
+
 def dictify(resource):
     fields = []
     for key in resource._fields:
@@ -196,6 +197,12 @@ class DataStoreView(MethodView):
                 valid_args.get("limit", 50),
             )
             body = u"".join(serializer(pagination))
+
+        cb=self.validate_args().get("callback")
+        if cb:										#use of callback forces jsonp style return
+			mimetype="application/javascript"
+			body=cb+"("+body+");\n"
+
         return Response(body, mimetype=mimetype)
 
 
