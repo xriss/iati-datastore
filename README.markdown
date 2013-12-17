@@ -26,6 +26,8 @@ to run the full setup.
   (the tests use an in-memory sqlite db)
 * Create a database (in postgres), and set an environment variable
   `DATABASE_URL` to something like `postgres:///iati-ds`.
+  - for instance
+    export DATABASE_URL=postgres:///iati-ds
 * Run `iati create_database` to create the db tables
 * Run `iati crawl update` to start the process of grabbing the source data
 * Run `iati runserver` to start a development server
