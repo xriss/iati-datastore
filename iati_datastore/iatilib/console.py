@@ -138,7 +138,7 @@ def import_fx():
 		reader = csv.reader(csvfile)
 		headers=reader.next()
 		rows={}
-		print ', '.join(headers)	#headers
+		print ', '.join(headers)	#headers (there also seems to be a trailing empty one)
 		i=0
 		for row in reader:
 			i+=1
