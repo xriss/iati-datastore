@@ -7,3 +7,4 @@ _testdata
 1
 *.egg-info
 iati_datastore/iatilib/cache/*
+iati_datastore/iatilib/frontend/static/ctrack/*

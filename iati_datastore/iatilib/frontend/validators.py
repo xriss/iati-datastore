@@ -31,8 +31,11 @@ sector = partial(codelist_validator, codelists.Sector)
 policy_marker = partial(codelist_validator, codelists.PolicyMarker)
 
 activity_api_args = v.Schema({
+
     "jsonp": v.Match(r'^[A-Z0-9a-z_]+$'),								#also use as JSONP flag
     "callback": v.Match(r'^[A-Z0-9a-z_]+$'),							#also use as JSONP flag
+    '_': v.All(v.Coerce(str)),					# jquery wants to add _ for unknown reasons, lets just play nice and ignore it...
+
     "limit": v.All(v.Coerce(int), v.Range(max=250000)),
     "offset": v.All(v.Coerce(int), v.Range(min=0)),
     "date": apidate,
