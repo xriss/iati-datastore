@@ -199,6 +199,12 @@ def _filter(query, args):
             'last-updated-datetime__lt': partial(lt, Activity.last_updated_datetime),
             'registry-dataset': registry_dataset,
             'registry-dataset': registry_dataset,
+            'budget_start-date__gt' : partial(gt,Budget.period_start),
+            'budget_start-date__lt' : partial(lt,Budget.period_start),
+            'budget_end-date__gt' : partial(gt,Budget.period_end),
+            'budget_end-date__lt' : partial(lt,Budget.period_end),
+            'transaction_date__gt' : partial(gt,Transaction.date),
+            'transaction_date__lt' : partial(lt,Transaction.date),
     }
 
     for filter, search_string in args.items():

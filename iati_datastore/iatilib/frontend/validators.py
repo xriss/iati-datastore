@@ -81,4 +81,29 @@ activity_api_args = v.Schema({
     'last-updated-datetime__gt' : apidate,
     'last-updated-datetime__lt' : apidate,
     'registry-dataset': v.All(v.Coerce(str)),
+
+#these need to be valid only on some querrys...
+
+    'budget_start-date__gt' : apidate,
+    'budget_start-date__lt' : apidate,
+    'budget_end-date__gt' : apidate,
+    'budget_end-date__lt' : apidate,
+
+    'transaction_date__gt' : apidate,
+    'transaction_date__lt' : apidate,
 })
+
+
+#budget_api_args = v.Schema({
+#    'budget_start-date__gt' : apidate,
+#    'budget_start-date__lt' : apidate,
+#    'budget_end-date__gt' : apidate,
+#    'budget_end-date__lt' : apidate,
+#})
+
+#transaction_api_args = v.Schema({
+#    'transaction_date__gt' : apidate,
+#    'transaction_date__lt' : apidate,
+#})
+
+

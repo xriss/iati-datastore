@@ -177,9 +177,12 @@ class DataStoreView(MethodView):
             self._valid_args = validators.activity_api_args(MultiDict(request.args))
         return self._valid_args
 
-    def get_response(self, serializer=None, mimetype="text/csv"):
+    def get_response(self, serializer=None, mimetype="text/csv", formtype="csv"):
 		
-        serializer = self.serializer or serializer 						# self.serializer has priority
+        serializer = self.serializer or serializer 						# self.serializer has priority (this forces csv with json mimetype)
+
+        if formtype=="stats":
+        	serializer=serialize.stats_json
 
         try:
             valid_args = self.validate_args()
@@ -189,14 +192,14 @@ class DataStoreView(MethodView):
 
         if self.streaming:
             query = query.yield_per(100)
-            body = serializer(Stream(query),mimetype)
+            body = serializer(Stream(query),mimetype,formtype)
         else:
             pagination = self.paginate(
                 query,
                 valid_args.get("offset", 0),
                 valid_args.get("limit", 50),
             )
-            body = u"".join(serializer(pagination,mimetype))
+            body = u"".join(serializer(pagination,mimetype,formtype))
 
         cb=None
         if mimetype=="application/json":								#only convert json output
@@ -213,10 +216,11 @@ class ActivityView(DataStoreView):
 
     def get(self, format):
         forms = {
-            ".xml": (serialize.xml, "application/xml"),
-            ".json": (serialize.json, "application/json"),  # rfc4627
-            ".db.json": (serialize.datastore_json, "application/json"),
-            ".csv": (serialize.csv, "text/csv")  # rfc4180
+            ".xml": (serialize.xml, "application/xml", "xml"),
+            ".json": (serialize.json, "application/json", "xml"),  					# this is a cached xml->json hack dump
+            ".db.json": (serialize.datastore_json, "application/json", "json"),		# real database dump, no hacks
+            ".stats.json": (serialize.stats_json, "application/json", "stats"),		# just return stats about the data
+            ".csv": (serialize.csv, "text/csv", "csv")  # rfc4180
         }
         if format not in forms:
             abort(404)
@@ -230,8 +234,9 @@ class DataStoreCSVView(DataStoreView):
 #        return self.get_response()
    def get(self, format):
         forms = {
-            ".json": (serialize.json, "application/json"),  # rfc4627
-            ".csv": (serialize.csv, "text/csv")  # rfc4180
+            ".stats.json": (serialize.stats_json, "application/json" , "stats" ),		#just return stats about the data
+            ".json": (serialize.datastore_json, "application/json", "csv" ),  # csv but convert the csv to json later
+            ".csv": (serialize.csv, "text/csv", "csv" )  # rfc4180
         }
         if format not in forms:
             abort(404)

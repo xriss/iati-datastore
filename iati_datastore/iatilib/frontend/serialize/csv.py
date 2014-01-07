@@ -184,9 +184,18 @@ def period_end_date(budget):
         return budget.period_end.strftime("%Y-%m-%d")
     return u""
 
-
+# should probably convert to USD at this point...
+# otherwise we are just spewing garbage.
 def budget_value(budget):
     return budget.value_amount
+
+#for now at least we can add the currency to the CSV output
+def budget_currency(budget):
+	if budget.value_currency:
+		return budget.value_currency
+	if budget.activity.default_currency:
+		return budget.activity.default_currency.value
+	return u""
 
 def value_currency(transaction):
     if transaction.value_currency:
@@ -308,7 +317,7 @@ class CSVSerializer(object):
     def __init__(self, fields, adapter=identity):
         self.fields = FieldDict(fields, adapter=adapter)
 
-    def __call__(self, data,mimetype):
+    def __call__(self, data,mimetype,formtype):
         """
         Return a generator of lines of csv
         """
@@ -554,7 +563,7 @@ transaction_csv = CSVSerializer((
     "reporting-org-ref",
     "reporting-org-type",
     "title",
-    "description",
+#    "description",
     "activity-status-code",
     "start-planned",
     "end-planned",
@@ -710,9 +719,10 @@ budget_csv = CSVSerializer((
     (u'budget-period-start-date', period_start_date),
     (u'budget-period-end-date', period_end_date),
     (u"budget-value", budget_value),
+    (u"budget-currency", budget_currency),
     u"iati-identifier",
     u"title",
-    u"description",
+#    u"description",
     u"recipient-country-code",
     u"recipient-country",
     u"recipient-country-percentage",
@@ -729,6 +739,7 @@ csv_budget_by_country = CSVSerializer((
     (u'budget-period-start-date', trans(period_start_date)),
     (u'budget-period-end-date', trans(period_end_date)),
     (u"budget-value", trans(budget_value)),
+    (u"budget-currency", trans(budget_currency)),
     u"iati-identifier",
     u"title",
     u"description",
@@ -745,6 +756,7 @@ csv_budget_by_sector = CSVSerializer((
     (u'budget-period-start-date', trans(period_start_date)),
     (u'budget-period-end-date', trans(period_end_date)),
     (u"budget-value", trans(budget_value)),
+    (u"budget-currency", trans(budget_currency)),
     u"iati-identifier",
     u"title",
     u"description",

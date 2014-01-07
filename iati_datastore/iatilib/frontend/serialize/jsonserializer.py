@@ -6,6 +6,7 @@ from flask import current_app
 from flask import json as jsonlib
 
 import xmltodict
+import inspect
 
 from iatilib.model import (
     Activity, Organisation, Transaction, Participation, SectorPercentage,
@@ -66,11 +67,13 @@ def json_rep(obj):
             ("start-actual", obj.start_actual),
             ("end-actual", obj.end_actual),
             ("activity-website", list(obj.websites)),
-            ("transaction", [json_rep(o) for o in obj.transactions]),
+            ("transaction", {}),
+#            ("transactions", [json_rep(o) for o in obj.transactions]),
             ("participating-org", [json_rep(o) for o in obj.participating_orgs]),
             ("recipient-country", [json_rep(o) for o in obj.recipient_country_percentages]),
             ("sector", [json_rep(o) for o in obj.sector_percentages]),
             ("budget", {}),
+#            ("budgets", [json_rep(o) for o in obj.budgets]),
             ("last-change", obj.last_change_datetime),
 
         ),)
@@ -119,7 +122,7 @@ def json_rep(obj):
             "period-start": obj.period_start,
             "period-end": obj.period_end,
             "value": {
-                "currency": obj.value_currency.value,
+                "currency": obj.value_currency.value if obj.value_currency else None,
                 "amount": str(obj.value_amount),
             }
         }
@@ -129,7 +132,7 @@ def json_rep(obj):
 def jsonraw(raw):
     return jsonlib.dumps(raw,indent=2 if current_app.debug else 0,cls=JSONEncoder)
 
-def json(pagination,mimetype):
+def json(pagination,mimetype,formtype):
     return jsonlib.dumps(OrderedDict((
         ("ok", True),
         ("total-count", pagination.total),
@@ -140,7 +143,7 @@ def json(pagination,mimetype):
     indent=2 if current_app.debug else 0,
     cls=JSONEncoder)
 
-def datastore_json(pagination,mimetype):
+def datastore_json(pagination,mimetype,formtype):
     return jsonlib.dumps(OrderedDict((
         ("ok", True),
         ("total-count", pagination.total),
@@ -150,3 +153,75 @@ def datastore_json(pagination,mimetype):
     )),
     indent=2 if current_app.debug else 0,
     cls=DatastoreJSONEncoder)
+
+def stats_json(pagination,mimetype,formtype):
+	
+	pmax=OrderedDict(( ("format","maximum"), ))
+	pmin=OrderedDict(( ("format","minimum"), ))
+	ptot=OrderedDict(( ("format","total"), ))
+	pave=OrderedDict(( ("format","average"), ))
+
+	def consider(n,v):
+		if isinstance(v, Decimal) or isinstance(v, datetime.date):
+			try:
+				if pmax[n] < v : pmax[n]=v
+			except (AttributeError,KeyError):
+				pmax[n]=v
+			try:
+				if pmin[n] > v : pmin[n]=v
+			except (AttributeError,KeyError):
+				pmin[n]=v
+
+		if isinstance(v, Decimal):
+			try:
+				ptot[n]+=v
+			except (AttributeError,KeyError):
+				ptot[n]=v
+
+		if isinstance(v, Budget):
+			consider("budget_period_start",v.period_start)
+			consider("budget_period_end",v.period_end)
+			consider("budget_value_amount",v.value_amount)
+
+		if isinstance(v, Transaction):
+			consider("transaction_date",v.value.date)
+			consider("transaction_amount",v.value.amount)
+
+		
+	def consider_members(it):
+		for n,v in inspect.getmembers(it) :
+			consider(n,v)
+
+	for it in pagination.items :
+		consider_members(it)
+		if isinstance(it, Activity):
+			for v in it.transactions :
+				consider(None,v)
+			for v in it.budgets :
+				consider(None,v)
+
+	tot=pagination.total
+	if pagination.limit<tot : tot=pagination.limit
+	if tot<1 : tot=1
+	
+	for n in (ptot) :
+		v=ptot[n]
+		try :
+			pave[n]=float(v)/float(tot)
+		except (TypeError,ValueError):
+			pass
+
+	dump=OrderedDict((
+		("ok", True),
+		("total-count", pagination.total),
+		("start", pagination.offset),
+		("limit", pagination.limit),
+		("maximum",pmax),
+		("minimum",pmin),
+		("total",ptot),
+		("average",pave),
+	))
+
+	return jsonlib.dumps(dump,
+	indent=2 if current_app.debug else 0,
+	cls=DatastoreJSONEncoder)
