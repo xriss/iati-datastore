@@ -82,7 +82,7 @@ activity_api_args = v.Schema({
     'last-updated-datetime__lt' : apidate,
     'registry-dataset': v.All(v.Coerce(str)),
 
-#these need to be valid only on some querrys...
+#these need to be valid only on some querys...
 
     'budget_start-date__gt' : apidate,
     'budget_start-date__lt' : apidate,
@@ -91,6 +91,14 @@ activity_api_args = v.Schema({
 
     'transaction_date__gt' : apidate,
     'transaction_date__lt' : apidate,
+
+	'budget_start-date__sort' : v.All(v.Coerce(str)),
+	'budget_end-date__sort' : v.All(v.Coerce(str)),
+	'transaction_date__sort' : v.All(v.Coerce(str)),
+	
+	'start-date__sort' : v.All(v.Coerce(str)),
+	'end-date__sort' : v.All(v.Coerce(str)),
+	
 })
 
 

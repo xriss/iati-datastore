@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask,send_from_directory
 from flask.ext.rq import RQ
 from flask.ext.heroku import Heroku
 from flaskext.markdown import Markdown
@@ -43,7 +43,12 @@ def create_app(**config):
             contents = f.read()
         return render_template('doc.html', doc=contents)
 
+    @app.route('/favicon.ico')
+    def favicon():
+        return send_from_directory(os.path.join(app.root_path, 'static'),'favicon.ico', mimetype='image/png')
+
     from .api1 import api
 
     app.register_blueprint(api, url_prefix="/api/1")
+
     return app

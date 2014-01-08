@@ -57,6 +57,7 @@ def json_rep(obj):
     if isinstance(obj, Activity):
         return OrderedDict((
             ("iati-identifier", obj.iati_identifier),
+#            ("reporting_org_id", obj.reporting_org_id),
             ("title", obj.title),
             ("description", obj.description),
             ("reporting-org", json_rep(obj.reporting_org)),
@@ -67,13 +68,13 @@ def json_rep(obj):
             ("start-actual", obj.start_actual),
             ("end-actual", obj.end_actual),
             ("activity-website", list(obj.websites)),
-            ("transaction", {}),
-#            ("transactions", [json_rep(o) for o in obj.transactions]),
+#            ("transaction", {}),
+            ("transactions", [json_rep(o) for o in obj.transactions]),
             ("participating-org", [json_rep(o) for o in obj.participating_orgs]),
             ("recipient-country", [json_rep(o) for o in obj.recipient_country_percentages]),
             ("sector", [json_rep(o) for o in obj.sector_percentages]),
-            ("budget", {}),
-#            ("budgets", [json_rep(o) for o in obj.budgets]),
+#            ("budget", {}),
+            ("budgets", [json_rep(o) for o in obj.budgets]),
             ("last-change", obj.last_change_datetime),
 
         ),)
@@ -156,10 +157,13 @@ def datastore_json(pagination,mimetype,formtype):
 
 def stats_json(pagination,mimetype,formtype):
 	
-	pmax=OrderedDict(( ("format","maximum"), ))
-	pmin=OrderedDict(( ("format","minimum"), ))
-	ptot=OrderedDict(( ("format","total"), ))
-	pave=OrderedDict(( ("format","average"), ))
+	pmax=OrderedDict()
+	pmin=OrderedDict()
+	ptot=OrderedDict()
+	pave=OrderedDict()
+	pnum=OrderedDict()
+	
+	counts={}
 
 	def consider(n,v):
 		if isinstance(v, Decimal) or isinstance(v, datetime.date):
@@ -186,11 +190,28 @@ def stats_json(pagination,mimetype,formtype):
 		if isinstance(v, Transaction):
 			consider("transaction_date",v.value.date)
 			consider("transaction_amount",v.value.amount)
-
+			
+		if isinstance(v, Activity):
+			consider("reporting_org_name",v.reporting_org.name)
 		
+		if n :
+			try:
+				counts[n][v]=True
+			except (KeyError):
+				try:
+					counts[n]={}
+					counts[n][v]=True
+				except (TypeError):
+					del counts[n]
+
+
 	def consider_members(it):
 		for n,v in inspect.getmembers(it) :
-			consider(n,v)
+			if n[0]!="_":
+				if n=="query" or n=="query_class" or n=="metadata" :
+					pass
+				else:
+					consider(n,v)
 
 	for it in pagination.items :
 		consider_members(it)
@@ -211,6 +232,9 @@ def stats_json(pagination,mimetype,formtype):
 		except (TypeError,ValueError):
 			pass
 
+	for n in (counts) :
+		pnum[n]=len(counts[n])
+		
 	dump=OrderedDict((
 		("ok", True),
 		("total-count", pagination.total),
@@ -220,6 +244,7 @@ def stats_json(pagination,mimetype,formtype):
 		("minimum",pmin),
 		("total",ptot),
 		("average",pave),
+		("counts",pnum),
 	))
 
 	return jsonlib.dumps(dump,

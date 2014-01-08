@@ -207,6 +207,16 @@ def _filter(query, args):
             'transaction_date__lt' : partial(lt,Transaction.date),
     }
 
+    sort_conditions = {
+            'budget_start-date__sort' : Budget.period_start,
+            'budget_end-date__sort' : Budget.period_end,
+            'transaction_date__sort' : Transaction.date,
+
+            'start-date__sort' : Activity.start_actual,
+            'end-date__sort' : Activity.end_actual,
+
+	}
+	
     for filter, search_string in args.items():
         filter_condition = filter_conditions.get(filter, None)
         if filter_condition:
@@ -226,6 +236,14 @@ def _filter(query, args):
                     query = query.filter(or_(*conditions))
             else:
                 query = query.filter(filter_condition(search_string))
+
+    for order, by_string in args.items():
+        sort_condition = sort_conditions.get(order, None)
+        if sort_condition:
+			if by_string=="desc":
+				query = query.order_by(sort_condition.desc())
+			else:
+				query = query.order_by(sort_condition)
 
     return query
 
