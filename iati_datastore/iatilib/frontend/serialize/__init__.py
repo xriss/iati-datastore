@@ -7,7 +7,7 @@ from .csv import (
 from .jsonserializer import json, datastore_json, stats_json
 
 
-def xml(pagination,mimetype):
+def xml(pagination,mimetype,formtype):
     out = u"""<result>
     <ok>True</ok>
     <iati-activities generated-datetime='{3}'>
