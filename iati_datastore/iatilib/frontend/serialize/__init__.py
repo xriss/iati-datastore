@@ -7,8 +7,8 @@ from .csv import (
 from .jsonserializer import json, datastore_json, stats_json
 
 
-def xml(pagination,mimetype):
-    out = u"""<result>
+def xml(pagination,mimetype,formtype):
+    yield u"""<result>
     <ok>True</ok>
     <iati-activities generated-datetime='{3}'>
       <query>
@@ -19,6 +19,5 @@ def xml(pagination,mimetype):
     """.format(pagination.total,
             pagination.offset, pagination.limit, datetime.now().isoformat())
     for activity in pagination.items:
-        out += activity.raw_xml
-    out += u"</iati-activities></result>"
-    return out
+        yield activity.raw_xml
+    yield u"</iati-activities></result>"
