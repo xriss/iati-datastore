@@ -10,6 +10,7 @@ from . import db
 from . import codelists
 
 
+
 act_relationship = ft.partial(
     sa.orm.relationship,
     cascade="all,delete",
@@ -112,7 +113,7 @@ class Activity(db.Model):
     title = sa.Column(sa.Unicode, default=u"", nullable=False)
     description = sa.Column(sa.Unicode, default=u"", nullable=False)
     default_currency = sa.Column(codelists.Currency.db_type())
-    raw_xml = sa.orm.deferred(sa.Column(
+    raw_xml = (sa.Column(
         sa.UnicodeText,
         nullable=False))
 
@@ -373,7 +374,7 @@ class Resource(db.Model):
     last_succ = sa.Column(sa.DateTime)        # last time status code was 200
     last_parsed = sa.Column(sa.DateTime)      # when parsing last completed
     last_parse_error = sa.Column(sa.Unicode)  # last error from xml parser
-    document = sa.orm.deferred(sa.Column(sa.LargeBinary))
+    document = (sa.Column(sa.LargeBinary))
     etag = sa.Column(sa.Unicode)
     activities = act_relationship("Activity", cascade="all,delete", passive_deletes=True)
     version = sa.Column(sa.Unicode)

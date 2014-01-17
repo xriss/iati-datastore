@@ -3,6 +3,9 @@ from functools import partial
 from sqlalchemy import or_, and_
 from sqlalchemy.sql.operators import eq, gt, lt
 from iatilib import codelists, db
+
+db.engine.echo=True
+
 from iatilib.model import (
     Activity, Budget, Transaction, CountryPercentage, SectorPercentage,
     RegionPercentage, Participation, Organisation, PolicyMarker,
